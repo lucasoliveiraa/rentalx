@@ -1,7 +1,9 @@
-import { Repository, getRepository } from "typeorm";
-import { Car } from "../entities/Car";
-import { ICarsRepository } from "@modules/cars/repositories/ICarsRepository";
+import { getRepository, Repository } from "typeorm";
+
 import { ICreateCarDTO } from "@modules/cars/dtos/ICreateCarDTO";
+import { ICarsRepository } from "@modules/cars/repositories/ICarsRepository";
+
+import { Car } from "../entities/Car";
 
 class CarsRepository implements ICarsRepository {
   private repository: Repository<Car>;
@@ -11,24 +13,24 @@ class CarsRepository implements ICarsRepository {
   }
 
   async create({
-    name,
-    description,
-    daily_rate,
-    license_plate,
-    fine_amount,
     brand,
     category_id,
+    daily_rate,
+    description,
+    fine_amount,
+    license_plate,
+    name,
     specifications,
     id,
   }: ICreateCarDTO): Promise<Car> {
     const car = this.repository.create({
-      name,
-      description,
-      daily_rate,
-      license_plate,
-      fine_amount,
       brand,
       category_id,
+      daily_rate,
+      description,
+      fine_amount,
+      license_plate,
+      name,
       specifications,
       id,
     });
@@ -47,20 +49,20 @@ class CarsRepository implements ICarsRepository {
   }
 
   async findAvailable(
-    name?: string,
     brand?: string,
     category_id?: string,
+    name?: string
   ): Promise<Car[]> {
     const carsQuery = await this.repository
       .createQueryBuilder("c")
       .where("available = :available", { available: true });
 
-    if (name) {
-      carsQuery.andWhere("name = :name", { name });
-    }
-
     if (brand) {
       carsQuery.andWhere("brand = :brand", { brand });
+    }
+
+    if (name) {
+      carsQuery.andWhere("name = :name", { name });
     }
 
     if (category_id) {
@@ -75,6 +77,16 @@ class CarsRepository implements ICarsRepository {
   async findById(id: string): Promise<Car> {
     const car = await this.repository.findOne(id);
     return car;
+  }
+
+  async updateAvailable(id: string, available: boolean): Promise<void> {
+    await this.repository
+      .createQueryBuilder()
+      .update()
+      .set({ available })
+      .where("id = :id")
+      .setParameters({ id })
+      .execute();
   }
 }
 
