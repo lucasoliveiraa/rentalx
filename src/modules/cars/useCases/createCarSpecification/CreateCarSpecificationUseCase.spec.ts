@@ -1,7 +1,8 @@
+import { SpecificationsRepository } from "@modules/cars/infra/typeorm/repositories/SpecificationsRepository";
+import { SpecificationsRepositoryInMemory } from "@modules/cars/repositories/In-memory/SpecificationsRepositoryInMemory";
 import { CarsRepositoryInMemory } from "@modules/cars/repositories/In-memory/CarsRepositoryInMemory";
 import { CreateCarSpecificationUseCase } from "./CreateCarSpecificationUseCase";
 import { AppError } from "@shared/errors/AppError";
-import { SpecificationsRepositoryInMemory } from "@modules/cars/repositories/In-memory/SpecificationsRepositoryInMemory";
 
 let createCarSpecificationUseCase: CreateCarSpecificationUseCase;
 let carsRepositoryInMemory: CarsRepositoryInMemory;
@@ -13,31 +14,31 @@ describe("Create Car Specification", () => {
     specificationsRepositoryInMemory = new SpecificationsRepositoryInMemory();
     createCarSpecificationUseCase = new CreateCarSpecificationUseCase(
       carsRepositoryInMemory,
-      specificationsRepositoryInMemory,
+      specificationsRepositoryInMemory
     );
   });
 
-  it("should be able to add a new specification to the car", async () => {
-    expect(async () => {
-      const car_id = "1234";
-      const specifications_id = ["54321"];
+  it("should not be able to add a new specification to a now-existent car", async () => {
+    const car_id = "1234";
+    const specifications_id = ["54321"];
 
-      await createCarSpecificationUseCase.execute({
+    await expect(
+      createCarSpecificationUseCase.execute({
         car_id,
         specifications_id,
-      });
-    }).rejects.toBeInstanceOf(AppError);
+      })
+    ).rejects.toEqual(new AppError("Car does not exists!"));
   });
 
   it("should be able to add a new specification to the car", async () => {
     const car = await carsRepositoryInMemory.create({
-      name: "Car available",
+      name: "Name Car",
       description: "Description Car",
       daily_rate: 100,
       license_plate: "ABC-1234",
       fine_amount: 60,
       brand: "Brand",
-      category_id: "Category",
+      category_id: "category",
     });
 
     const specification = await specificationsRepositoryInMemory.create({
