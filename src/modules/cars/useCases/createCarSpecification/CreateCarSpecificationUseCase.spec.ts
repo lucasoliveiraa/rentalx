@@ -1,8 +1,9 @@
 import { SpecificationsRepository } from "@modules/cars/infra/typeorm/repositories/SpecificationsRepository";
+
+import { AppError } from "@shared/errors/AppError";
+import { CreateCarSpecificationUseCase } from "./CreateCarSpecificationUseCase";
 import { SpecificationsRepositoryInMemory } from "@modules/cars/repositories/In-memory/SpecificationsRepositoryInMemory";
 import { CarsRepositoryInMemory } from "@modules/cars/repositories/In-memory/CarsRepositoryInMemory";
-import { CreateCarSpecificationUseCase } from "./CreateCarSpecificationUseCase";
-import { AppError } from "@shared/errors/AppError";
 
 let createCarSpecificationUseCase: CreateCarSpecificationUseCase;
 let carsRepositoryInMemory: CarsRepositoryInMemory;
